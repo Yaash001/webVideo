@@ -1,9 +1,12 @@
 import React from 'react'
-import { Layout } from './components/layout'
+import { RouterProvider } from 'react-router-dom'
+import { router } from './router'
 
 const App : React.FC = () => {
   return (
-<><Layout children={<h1>HELLO YAASH</h1>}/></>
+    <>
+    <RouterProvider router={router}/>
+    </>
   )
 }
 
