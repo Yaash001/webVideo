@@ -2,13 +2,16 @@ import React, { useState } from 'react'
 import { Layout } from '../../components/Layout'
 import type { AuthFormData } from './../../types';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import type { Dispatch } from '../../reducer/store';
+import { signUpUser } from '../../reducer/auth/authReducer';
 
 export const SignUp : React.FC = () => {
   const [FormData,setFormData] = useState<AuthFormData>({
     email:"",
     password:"",
   });
-
+  const dispatch = useDispatch<Dispatch>();
   const handleChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
     const {name,value} = e.target;
     setFormData((prev)=>({
@@ -19,8 +22,8 @@ export const SignUp : React.FC = () => {
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault();
       console.log(FormData.email)
-
       console.log(FormData.password)
+      dispatch(signUpUser(FormData))
     };
     
   

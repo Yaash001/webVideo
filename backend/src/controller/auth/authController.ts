@@ -14,7 +14,7 @@ interface RegisterReq extends Request{
 
 
 export const signUpUser : RequestHandler = async(req : RegisterReq,res) =>{
-/*
+
 try {
     const {email,password} = req.body;
     const existingUser = await User.findOne({email});
@@ -34,7 +34,7 @@ try {
         return sendResponse(res,500,false,"Internal Server Error")
 
     //console.error(`Error While Signing Up ... ${error}`)
-}*/
+}
 }
 
 export const signInUser : RequestHandler = async(req : RegisterReq,res) =>{
