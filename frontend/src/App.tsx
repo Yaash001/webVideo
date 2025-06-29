@@ -1,8 +1,9 @@
 import React from 'react'
+import { Layout } from './components/layout'
 
-const App = () => {
+const App : React.FC = () => {
   return (
-    <div><h1>HEllo world</h1></div>
+<><Layout children={<h1>HELLO YAASH</h1>}/></>
   )
 }
 
