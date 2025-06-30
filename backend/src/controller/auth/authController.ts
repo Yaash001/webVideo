@@ -50,7 +50,9 @@ try {
     } 
     else{
         const Token=await genrateToken(existingUser);
-        return sendResponse(res,200,true,"Logged in Sucessfully",{user:Token});
+        return sendResponse(res,200,true,"Logged in Sucessfully",{
+            user:{token:Token}
+        });
 
     }
 }

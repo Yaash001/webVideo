@@ -1,13 +1,18 @@
-import React, { useState } from 'react'
+import React, { useState,  } from 'react'
 import { Layout } from '../../components/Layout'
 import { Link } from 'react-router-dom'
 import type { AuthFormData } from '../../types';
+import { signInUser } from '../../reducer/auth/authReducer';
+import type { Dispatch } from '../../reducer/store';
+import { useDispatch } from 'react-redux';
 
 export const SignIn : React.FC = () => {
   const [FormData,setFormData] = useState<AuthFormData>({
       email:"",
       password:"",
     });
+
+  const dispatch = useDispatch<Dispatch>();
 
       const handleChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
         const {name,value} = e.target;
@@ -20,7 +25,8 @@ export const SignIn : React.FC = () => {
       
           const handleSubmit = async(e:React.FormEvent<HTMLFormElement>)=>{
             e.preventDefault();
-            console.log("log From signIn PAge")
+            const {email,password} = FormData;
+            dispatch(signInUser({email,password}))
           };
           
   return (

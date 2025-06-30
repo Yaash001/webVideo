@@ -22,6 +22,12 @@ interface Signupload {
     email:string,
     password:string
 }
+
+
+interface Signinload {
+    email:string,
+    password:string
+}
 interface Response{
     sucess:boolean,
     message:string,
@@ -32,34 +38,71 @@ const initialState :  AuthSate ={
     loading:false,
 }
 
-const authSlice = createSlice({
-    name:"auth",
-    initialState,
-    reducers:{},
-}
-
-);
-
 //signup req
-
-export const signUpUser = createAsyncThunk<void,Signupload,{rejectValue:string}>("auth/sign-up",async(load,thunkApi)=>{
+export const signUpUser = createAsyncThunk<void,Signupload,{rejectValue:string}>("auth/sign-up",async(load)=>{
     try {
-        const d = await backendApi.post<Response>("/api/v1/auth/sign-up",load);
-        if(d.data.sucess)
+        const {data} = await backendApi.post<Response>("/api/v1/auth/sign-up",load);
+        if(data.sucess)
         {
-            toast.success(d.data.message)
+            toast.success(data.message)
         }
         else{
-            toast.warning(d.data.message)
+            toast.warning(data.message)
         }
-    } catch (error) {
-        toast.error(`${error}`)
+    } catch (error :any) {
+        toast.error(error)
         
     }
 }
 )
 
+//signin req
+export const signInUser = createAsyncThunk<string | null, Signinload, { rejectValue: string }>(
+  'auth/sign-in',
+  async (load, thunkApi) => {
+    try {
+      const { email, password } = load;
+      const { data } = await backendApi.post<Response>('/api/v1/auth/sign-in', { email, password });
 
+      if (data.sucess && data.user?.token) {
+        if (data.user) {
+          toast.success(data.message);
+          localStorage.setItem('token', data.user.token);
+                  }
+        return data.user.token || null;
+ // explicit return to avoid `undefined` error
+      } else {
+        toast.warning(data.message);
+        return thunkApi.rejectWithValue(data.message);
+      }
+    } catch (error: any) {
+      const errormsg = error.response?.data?.message || 'Something Is Wrong';
+      toast.error(errormsg);
+      return thunkApi.rejectWithValue(errormsg);
+    }
+  }
+);
+
+
+const authSlice = createSlice({
+    name:"auth",
+    initialState,
+    reducers:{},
+    extraReducers:(builder)=>{
+        builder.addCase(signInUser.pending,(state)=>{state.loading = true
+
+        })
+        .addCase(signInUser.fulfilled,(state)=>{
+            //state.loggedIn = action.payload 
+            state.loading=false
+        })
+        .addCase(signInUser.rejected,(state)=>{
+            state.loading=false
+        })
+    }
+}
+
+);
 
 export const authReducer = authSlice.reducer;
 export const selectLoggedIn = (state : RootState)=>state.auth.loggedIn;
