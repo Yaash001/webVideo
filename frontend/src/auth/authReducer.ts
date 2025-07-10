@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { RootState } from './store';
+import type { RootState } from '../reducer/store';
 
 interface User {
     _id:string;

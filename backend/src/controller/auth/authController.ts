@@ -37,30 +37,25 @@ try {
 }
 }
 
-export const signInUser : RequestHandler = async(req : RegisterReq,res) =>{
-try {
-    const {email,password} = req.body;
-    const existingUser = await User.findOne({email});
-    if(!existingUser){
-        return sendResponse(res,404,false,"Accout Doesnt Exist")
+export const signInUser: RequestHandler = async (req: RegisterReq, res) => {
+  try {
+    const { email, password } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      return sendResponse(res, 404, false, "Accout Doesnt Exist");
     }
-    const matched = await comparePass(password,existingUser.password);
-    if(!matched){
-        return sendResponse(res,404,false,"invalid credentials");
-    } 
-    else{
-        const Token=await genrateToken(existingUser);
-        return sendResponse(res,200,true,"Logged in Sucessfully",{
-            user:{token:Token}
-        });
 
+    const matched = await comparePass(password, existingUser.password);
+    if (!matched) {
+      return sendResponse(res, 404, false, "invalid credentials");
     }
-}
-catch(error){
-        console.error(`Error While Signing Up ... ${error}`)
 
-            return sendResponse(res,500,false,"Internal Server Error")
-
-}
-
-}
+    const Token = await genrateToken(existingUser);
+    return sendResponse(res, 200, true, "Logged in Sucessfully", {
+      user: { token: Token },
+    });
+  } catch (error) {
+    console.error(`Error While Signing In ... ${error}`);
+    return sendResponse(res, 500, false, "Internal Server Error");
+  }
+};

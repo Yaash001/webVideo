@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 import backendApi from './../../api/backendApi';
 import { toast } from 'sonner';
@@ -57,7 +57,7 @@ export const signUpUser = createAsyncThunk<void,Signupload,{rejectValue:string}>
 )
 
 //signin req
-export const signInUser = createAsyncThunk<string | null, Signinload, { rejectValue: string }>(
+export const signInUser = createAsyncThunk<User | null, Signinload, { rejectValue: string }>(
   'auth/sign-in',
   async (load, thunkApi) => {
     try {
@@ -65,18 +65,15 @@ export const signInUser = createAsyncThunk<string | null, Signinload, { rejectVa
       const { data } = await backendApi.post<Response>('/api/v1/auth/sign-in', { email, password });
 
       if (data.sucess && data.user?.token) {
-        if (data.user) {
-          toast.success(data.message);
-          localStorage.setItem('token', data.user.token);
-                  }
-        return data.user.token || null;
- // explicit return to avoid `undefined` error
+        toast.success(data.message);
+        localStorage.setItem('token', data.user.token);
+        return data.user; 
       } else {
         toast.warning(data.message);
         return thunkApi.rejectWithValue(data.message);
       }
     } catch (error: any) {
-      const errormsg = error.response?.data?.message || 'Something Is Wrong';
+      const errormsg = error.response?.data?.message || 'Something went wrong';
       toast.error(errormsg);
       return thunkApi.rejectWithValue(errormsg);
     }
@@ -85,24 +82,24 @@ export const signInUser = createAsyncThunk<string | null, Signinload, { rejectVa
 
 
 const authSlice = createSlice({
-    name:"auth",
-    initialState,
-    reducers:{},
-    extraReducers:(builder)=>{
-        builder.addCase(signInUser.pending,(state)=>{state.loading = true
+  name: "auth",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(signInUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(signInUser.fulfilled, (state, action: PayloadAction<User | null>) => {
+  state.loggedIn = action.payload;
+})
 
-        })
-        .addCase(signInUser.fulfilled,(state)=>{
-            //state.loggedIn = action.payload 
-            state.loading=false
-        })
-        .addCase(signInUser.rejected,(state)=>{
-            state.loading=false
-        })
-    }
-}
-
-);
+      .addCase(signInUser.rejected, (state) => {
+        state.loggedIn = null;
+        state.loading = false;
+      });
+  },
+});
 
 export const authReducer = authSlice.reducer;
 export const selectLoggedIn = (state : RootState)=>state.auth.loggedIn;

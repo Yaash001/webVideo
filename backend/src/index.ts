@@ -1,8 +1,9 @@
 import express from "express";
 const app = express();
-const corsOpts ={
-    origin:["http://localhost:5173"]
-}
+const corsOpts = {
+  origin: ["http://localhost:5173"],
+  credentials: true, // ✅ Important for allowing cookies / auth headers
+};
 import cors from 'cors'
 import connectDb from "./config/db";
 import dotenv from 'dotenv';
