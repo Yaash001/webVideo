@@ -9,7 +9,7 @@ export const UserProfile: React.FC = () => {
   const [password, setPassword] = useState<string>('');
   const [edit, setEdit] = useState<boolean>(false);
   const [changePass, setChangePass] = useState<boolean>(false);
-  const navigate = useNavigate(); // ✅ moved here
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchUser = async () => {
