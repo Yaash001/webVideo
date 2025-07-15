@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import type { Dispatch } from '../../reducer/store';
 import type { AuthFormData } from '../../types';
 import { toast } from 'sonner';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
 
 export const SignIn: React.FC = () => {
   const dispatch = useDispatch<Dispatch>();
@@ -28,26 +28,36 @@ export const SignIn: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const { email, password } = formData;
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  const { email, password } = formData;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast.error('Invalid email format');
-      return;
-    }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    toast.error('Invalid email format');
+    return;
+  }
 
-    setIsSubmitting(true);
-    const resultAction = await dispatch(signInUser({ email, password,navigate }));
-    setIsSubmitting(false);
+  setIsSubmitting(true);
+
+  try {
+    const resultAction = await dispatch(signInUser({ email, password, navigate }));
 
     if (signInUser.fulfilled.match(resultAction)) {
-      navigate('/user-profile');
+      
+      setTimeout(() => {
+        navigate('/user-profile');
+        setIsSubmitting(false)
+      }, 2000); // 2 second delay
     } else {
       toast.error('Login failed. Please check your credentials.');
+      setIsSubmitting(false)
     }
-  };
+  } catch (err: any) {
+    toast.error(err?.message ?? 'Something went wrong');
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <Layout>
@@ -97,16 +107,24 @@ export const SignIn: React.FC = () => {
             </div>
 
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full mb-5 py-4 px-4 bg-green-500 hover:bg-green-700 text-white font-bold rounded-md shadow-sm transition duration-100 disabled:bg-green-400 disabled:cursor-not-allowed flex items-center justify-center capitalize"
-            >
-              {isSubmitting ? 'Logging in...' : 'Login'}
-            </button>
+  type="submit"
+  disabled={isSubmitting}
+  className="w-full mb-5 py-4 px-4 bg-green-500 hover:bg-green-700 text-white font-bold rounded-md shadow-sm transition duration-100 disabled:bg-green-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 capitalize"
+>
+  {isSubmitting ? (
+    <>
+      <FiLoader className="animate-spin" size={18} />
+      Logging in...
+    </>
+  ) : (
+    'Login'
+  )}
+</button>
+
           </form>
 
           <div className="mt-4 text-center">
-            Don’t have an account?
+            Don't have an account?
             <br />
             <Link
               to="/sign-up"

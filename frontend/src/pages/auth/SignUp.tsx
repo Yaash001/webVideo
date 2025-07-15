@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Layout } from '../../components/Layout';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiLoader } from 'react-icons/fi';
 import { toast } from 'sonner';
 import type { AuthFormData } from '../../types';
 import type { Dispatch } from '../../reducer/store';
@@ -49,12 +49,30 @@ export const SignUp: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    await dispatch(signUpUser(formData));
-    toast.success('Account created! Redirecting to login...');
+    try{
+        const res =  await dispatch(signUpUser(formData)).unwrap();
 
+        if (res.success) {
+          toast.success('Account created! Redirecting to login...');
     setTimeout(() => {
       window.location.href = '/sign-in';
-    }, 1);
+      setIsSubmitting(false)
+    }, 2000);
+
+        } else {
+          toast.error(res.message || 'Signup failed');
+          setIsSubmitting(false)
+
+        }
+    }
+    catch (err: any) {
+  toast.error(err?.message ?? err ?? 'Something went wrong');
+  setIsSubmitting(false)
+
+}
+
+   
+    
   };
 
   return (
@@ -134,12 +152,20 @@ export const SignUp: React.FC = () => {
 
             {/* Submit  */}
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-3 px-4 bg-green-500 hover:bg-green-700 text-white font-bold rounded-md shadow-sm transition duration-100 disabled:bg-green-400 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Signing Up...' : 'Sign Up'}
-            </button>
+  type="submit"
+  disabled={isSubmitting}
+  className="w-full py-3 px-4 bg-green-500 hover:bg-green-700 text-white font-bold rounded-md shadow-sm transition duration-100 disabled:bg-green-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 capitalize"
+>
+  {isSubmitting ? (
+    <>
+      <FiLoader className="animate-spin" size={18} />
+      Signing up...
+    </>
+  ) : (
+    'Sign Up'
+  )}
+</button>
+
           </form>
 
           <div className="mt-4 text-center">

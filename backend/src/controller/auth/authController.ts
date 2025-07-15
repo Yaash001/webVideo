@@ -13,29 +13,32 @@ interface RegisterReq extends Request{
 }
 
 
-export const signUpUser : RequestHandler = async(req : RegisterReq,res) =>{
+export const signUpUser : RequestHandler = async(req : RegisterReq,res) => {
+  try {
+    const { email, password } = req.body;
+    const normalizedEmail = email.toLowerCase();
 
-try {
-    const {email,password} = req.body;
-    const existingUser = await User.findOne({email});
-    if(existingUser){
-       return sendResponse(res,400,false,"User Already Exist ")
-        // console.log(`User exist With Mail:${email}`)
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return sendResponse(res, 400, false, "Email is already registered");
     }
-    const hashpassword = await hashpass(password)
+
+    const hashpassword = await hashpass(password);
     const newUser = await User.create({
-        email,
-        password:hashpassword,
-        token:crypto.randomBytes(16).toString("hex"),
+      email: normalizedEmail,
+      password: hashpassword,
+      token: crypto.randomBytes(16).toString("hex"),
     });
-    return sendResponse(res,200,true,"User Created SucessFully",{user:newUser})
 
-} catch (error) {
-        return sendResponse(res,500,false,"Internal Server Error")
+    return sendResponse(res, 200, true, "User Created Successfully", {
+      user: newUser,
+    });
 
-    //console.error(`Error While Signing Up ... ${error}`)
-}
-}
+  } catch (error) {
+    console.error("Signup Error:", error);
+    return sendResponse(res, 500, false, "Internal Server Error");
+  }
+};
 
 export const signInUser: RequestHandler = async (req: RegisterReq, res) => {
   try {

@@ -92,7 +92,7 @@ const handleLogout = () => {
             </li>
             <li>
               <NavLink
-                to={"/user/profile"}
+                to={"/user-profile"}
                 onClick={toggleSide}
                 className="flex items-center p-3 hover:bg-slate-400 hover:text-gray-800 rounded-sm"
               >
