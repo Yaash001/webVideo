@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Layout } from '../../components/Layout';
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom';
 import { signInUser } from '../../reducer/auth/authReducer';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from '../../reducer/store';
@@ -10,7 +10,7 @@ import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export const SignIn: React.FC = () => {
   const dispatch = useDispatch<Dispatch>();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState<AuthFormData>({
     email: '',
@@ -38,14 +38,14 @@ export const SignIn: React.FC = () => {
       return;
     }
 
-
     setIsSubmitting(true);
-
-    const resultAction = await dispatch(signInUser({ email, password }));
+    const resultAction = await dispatch(signInUser({ email, password,navigate }));
     setIsSubmitting(false);
 
     if (signInUser.fulfilled.match(resultAction)) {
       navigate('/user-profile');
+    } else {
+      toast.error('Login failed. Please check your credentials.');
     }
   };
 
@@ -87,6 +87,7 @@ export const SignIn: React.FC = () => {
                 />
                 <button
                   type="button"
+                  aria-label="Toggle Password Visibility"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-800"
                 >

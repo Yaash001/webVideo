@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/tool
 import type { RootState } from '../store';
 import backendApi from './../../api/backendApi';
 import { toast } from 'sonner';
+import type { NavigateFunction } from 'react-router-dom';
 
 
 interface User {
@@ -26,7 +27,8 @@ interface Signupload {
 
 interface Signinload {
     email:string,
-    password:string
+    password:string,
+    navigate  : NavigateFunction
 }
 interface Response{
     sucess:boolean,
